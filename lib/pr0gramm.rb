@@ -1,3 +1,4 @@
+require 'pr0gramm/comment'
 require 'pr0gramm/flags'
 require 'pr0gramm/item'
 require 'pr0gramm/requester'
