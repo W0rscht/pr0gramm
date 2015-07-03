@@ -1,149 +1,90 @@
-require 'rest-client'
+# local testing workaround
+$LOAD_PATH.unshift File.dirname(__FILE__) +'/lib/'
 
-class Pr0gramm
+require 'pr0gramm'
 
-  class Pr0gramm::Item
+pr0 = Pr0gramm.new({ username: 'RubyPr0gramm', password: 'RubyPr0gramm' })
 
-    attr_reader :id, :promoted, :up, :down, :created, :image, :thumb, :fullsize, :source, :flags, :user, :mark
+requester = pr0.requester
 
-    def initialize(item)
+puts requester.session.inspect
 
-      @id       = item['id']
-      @promoted = item['promoted']
-      @up       = item['up']
-      @down     = item['down']
-      @created  = item['created']
-      @image    = item['image']
-      @thumb    = item['thumb']
-      @fullsize = item['fullsize']
-      @source   = item['source']
-      @flags    = item['flags']
-      @user     = item['user']
-      @mark     = item['mark']
-    end
-  end
+result = requester.get('/user/info')
 
-  class Pr0gramm::User
+puts result.inspect
 
-    @mark_mapping = {
-      '0' => 'Schwuchtel',
-      '1' => 'Neuschwuchtel',
-      '2' => 'Altschwuchtel',
-      '3' => 'Admin',
-      '4' => 'Gesperrt',
-      '5' => 'Moderator',
-      '6' => 'Fliesentischbesitzer',
-      '7' => 'Lebende Legende',
-      '8' => 'pr0wichtler',
-      '9' => 'Edler Spender',
-    }
+#puts result.inspect
 
-    attr_reader :id, :name, :registered, :score, :mark, :admin, :banned, :comments,
+# #pr0.update
+# items = pr0.items
+# pr0.update({
+#   older: items[-1]['promoted'],
+#   filter: [:sfw, :nsfw, :nsfl]
+# })
 
-    def initialize(name)
+# class Pr0gramm
 
+#   def update(options = {})
 
-      # http://pr0gramm.com/api/profile/info?name=GermanLeviathan
+#     options = {
+#       promoted: @promoted,
+#       filter:   @filter,
+#     }.merge(options)
 
-      # @id =
-      # @name =
-      # @registered =
-      # @score =
-      # @mark =
-      # @admin =
-      # @banned =
-    end
-  end
+#     if !@items || ( @last_filter && @last_filter.uniq.sort != @filter.uniq.sort )
+#       @items = []
+#     end
 
-  attr_accessor :filter
-  attr_reader :items
+#     @last_filter = options[:filter]
 
-  def initialize(options = {})
+#     flags  = 0
+#     flags += 1 if @last_filter.include?(:sfw)
+#     flags += 2 if @last_filter.include?(:nsfw)
+#     flags += 4 if @last_filter.include?(:nsfl)
 
-    options = {
-      url:      'pr0gramm.com',
-      protocol: 'https',
-      filter:   [:sfw],
-      promoted: true,
-    }.merge(options)
-
-    @promoted = options[:promoted] # 'beliebt'
-    @filter   = options[:filter]
-    @base_url = "#{options[:protocol]}://#{options[:url]}/"
-
-    @last_filter = []
-
-    update
-  end
-
-  def update(options = {})
-
-    options = {
-      promoted: @promoted,
-      filter:   @filter,
-    }.merge(options)
-
-    if !@items || ( @last_filter && @last_filter.uniq.sort != @filter.uniq.sort )
-      @items = []
-    end
-
-    @last_filter = options[:filter]
-
-    flags  = 0
-    flags += 1 if @last_filter.include?(:sfw)
-    flags += 2 if @last_filter.include?(:nsfw)
-    flags += 4 if @last_filter.include?(:nsfl)
-
-    parameter = {
-      flags: flags
-    }
-    if options[:promoted]
-      parameter[:promoted] = options[:promoted]
-    end
-    if options[:older]
-      parameter[:older] = options[:older]
-    end
-    response = RestClient.get "#{@base_url}api/items/get", {
-      accept: :json,
-      params: parameter
-    }
+#     parameter = {
+#       flags: flags
+#     }
+#     if options[:promoted]
+#       parameter[:promoted] = options[:promoted]
+#     end
+#     if options[:older]
+#       parameter[:older] = options[:older]
+#     end
+#     response = RestClient.get "#{@base_url}api/items/get", {
+#       accept: :json,
+#       params: parameter
+#     }
 
 
-puts @items.inspect
-puts response.to_str
+# puts @items.inspect
+# puts response.to_str
 
-    result = JSON.parse response.to_str
+#     result = JSON.parse response.to_str
 
 
-    new_items = []
-    result['items'].each { |item|
+#     new_items = []
+#     result['items'].each { |item|
 
-      known = false
-      @items.each { |known_item|
+#       known = false
+#       @items.each { |known_item|
 
-        next if known_item['id'] != item['id']
-        known = true
-        break
-      }
+#         next if known_item['id'] != item['id']
+#         known = true
+#         break
+#       }
 
-      next if known
+#       next if known
 
-      new_items.push(item)
-    }
-    @items += new_items
+#       new_items.push(item)
+#     }
+#     @items += new_items
 
-puts @items.inspect
-  end
-end
+# puts @items.inspect
+#   end
+# end
 
-pr0 = Pr0gramm.new
 
-#pr0.update
-items = pr0.items
-pr0.update({
-  older: items[-1]['promoted'],
-  filter: [:sfw, :nsfw, :nsfl]
-})
 
 
 
