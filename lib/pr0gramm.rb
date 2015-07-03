@@ -1,4 +1,6 @@
+require 'pr0gramm/flags'
 require 'pr0gramm/requester'
+require 'pr0gramm/user'
 
 class Pr0gramm
 
@@ -25,4 +27,13 @@ class Pr0gramm
     # TODO
     # @flags = session[:flags]
   end
+
+  def user(name)
+
+    result = requester.get('/profile/info', { name: name, flags: @flags } )
+    user   = Pr0gramm::User.new( result )
+
+    user
+  end
+
 end
