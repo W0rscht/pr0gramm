@@ -92,7 +92,7 @@ class Pr0gramm
 
       return if !@session
 
-      #logout_result = post( '/user/logout', { id: @session[:id], _nonce: @session[:id][0..16] } )
+      logout_result = post( '/user/logout', { id: @session[:id], _nonce: @session[:id][0..16] } )
 
       return if !login_result['success']
 
