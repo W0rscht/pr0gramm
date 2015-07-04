@@ -2,7 +2,13 @@ class Pr0gramm
 
   module API
 
-    def user(name)
+    def user(name = nil)
+
+      if !name
+        session_data = session
+        fail 'Not logged in. Missing username to request.' if !session_data
+        name = session_data[:name]
+      end
 
       result = @requester.get('/profile/info', { name: name, flags: @flags })
       user   = Pr0gramm::User.new( result )
@@ -56,5 +62,8 @@ class Pr0gramm
       }
     end
 
+    def session
+      @requester.session
+    end
   end
 end

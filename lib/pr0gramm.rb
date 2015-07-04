@@ -31,9 +31,4 @@ class Pr0gramm
     # session = session
     # @flags  = session[:flags]
   end
-
-  def session
-    @requester.session
-  end
-
 end
