@@ -75,17 +75,7 @@ class Pr0gramm
 
       fail "Login for user '#{username}' failed." if !login_result['success']
 
-      # TODO: Move to session?
-      session_cookie = JSON.parse URI.unescape( @cookies['me'] )
-
-      @session = {
-        id:    session_cookie['id'],
-        name:  session_cookie['n'],
-        admin: session_cookie['a'] == 1 ? true : false,
-        flags: session_cookie['flags'], # TODO: convert from Integer to words
-        paid:  session_cookie['paid'],
-        pp:    session_cookie['pp'], # TODO: ?
-      }
+      cookies_to_session
     end
 
     def logout
@@ -103,5 +93,28 @@ class Pr0gramm
     def destructor(_object_id)
       logout
     end
+
+    private
+
+    def cookies_to_session
+      # TODO: Move to session?
+      session_cookie = JSON.parse URI.unescape( @cookies['me'] )
+
+      @session = {
+        id:    session_cookie['id'],
+        name:  session_cookie['n'],
+        paid:  session_cookie['paid'],
+        pp:    session_cookie['pp'], # TODO: ?
+      }
+
+      @session[:admin] = session_cookie['a'] == 1 ? true : false;
+
+      flags = session_cookie['flags']
+      if flags
+        flags = Pr0gramm::Flags.array( flags )
+      end
+      @session[:flags] = flags
+    end
+
   end
 end
