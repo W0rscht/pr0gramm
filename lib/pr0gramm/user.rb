@@ -2,19 +2,6 @@ class Pr0gramm
 
   class User
 
-    MARK_MAPPING = {
-      0 => 'Schwuchtel',
-      1 => 'Neuschwuchtel',
-      2 => 'Altschwuchtel',
-      3 => 'Admin',
-      4 => 'Gesperrt',
-      5 => 'Moderator',
-      6 => 'Fliesentischbesitzer',
-      7 => 'Lebende Legende',
-      8 => 'pr0wichtler',
-      9 => 'Edler Spender',
-    }
-
     attr_reader :id, :name, :registered, :score, :mark, :admin, :banned,
                 :comment_count, :upload_count, :like_count, :tag_count,
                 :follow_count, :likes_are_public, :following
@@ -27,7 +14,7 @@ class Pr0gramm
       @name       = user_data['user']['name']
       @registered = Time.at( user_data['user']['registered'] ).to_datetime
       @score      = user_data['user']['score']
-      @mark       = MARK_MAPPING[ user_data['user']['mark'] ]
+      @mark       = Pr0gramm::Mark.string( user_data['user']['mark'] )
       @admin      = user_data['user']['admin'] == 1 ? true : false
       @banned     = user_data['user']['banned'] == 1 ? true : false
 
