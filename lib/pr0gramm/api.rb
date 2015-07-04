@@ -10,9 +10,15 @@ class Pr0gramm
       user
     end
 
-    def items()
+    def items( parameter = {} )
 
-      result = @requester.get('/items/get', { flags: @flags, promoted: @promoted })
+      parameter = {
+        flags:    @flags,
+        promoted: @promoted
+      }.merge( parameter )
+
+
+      result = @requester.get('/items/get', parameter)
 
       # TODO:
       # result['atEnd']
