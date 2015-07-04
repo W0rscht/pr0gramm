@@ -2,6 +2,13 @@ class Pr0gramm
 
   module Flags
 
+    MAPPING = {
+      sfw:  1,
+      nsfw: 2,
+      nsfl: 4,
+    }
+    REVERSED_MAPPING = MAPPING.invert
+
     # integer = Pr0gramm::Flags.integer( [:sfw] )
     # integer = Pr0gramm::Flags.integer( [:nsfw] )
     # integer = Pr0gramm::Flags.integer( [:sfw, :nsfw] )
@@ -11,11 +18,11 @@ class Pr0gramm
     # integer = Pr0gramm::Flags.integer( [:sfw, :nsfw, :nsfl] )
     def self.integer(array)
 
-      flags  = 0
-      flags += 1 if array.include?(:sfw)
-      flags += 2 if array.include?(:nsfw)
-      flags += 4 if array.include?(:nsfl)
-
+      flags = 0
+      MAPPING.each { |flag, digit|
+        next if !array.include?( flag )
+        flags += digit
+      }
       flags
     end
 
@@ -28,14 +35,8 @@ class Pr0gramm
     # array = Pr0gramm::Flags.array(7)
     def self.array(integer)
 
-      mapping = {
-        4 => :nsfl,
-        2 => :nsfw,
-        1 => :sfw,
-      }
-
       array = []
-      mapping.each { |digit, flag|
+      REVERSED_MAPPING.each { |digit, flag|
 
         next if digit > integer
 
@@ -51,11 +52,7 @@ class Pr0gramm
     # symbol = Pr0gramm::Flags.symbol(2)
     # symbol = Pr0gramm::Flags.symbol(4)
     def self.symbol(integer)
-
-      return :sfw  if integer == 1
-      return :nsfw if integer == 2
-      return :nsfl if integer == 4
-
+      REVERSED_MAPPING[integer]
     end
 
   end
