@@ -41,7 +41,6 @@ class Pr0gramm
 
       comments = []
       info['comments'].each { |comment|
-        p comment
         comments.push( Pr0gramm::Comment.new( comment ) )
       }
 
