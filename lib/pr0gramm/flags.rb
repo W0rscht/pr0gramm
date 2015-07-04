@@ -46,5 +46,17 @@ class Pr0gramm
 
      array
     end
+
+    # symbol = Pr0gramm::Flags.symbol(1)
+    # symbol = Pr0gramm::Flags.symbol(2)
+    # symbol = Pr0gramm::Flags.symbol(4)
+    def self.symbol(integer)
+
+      return :sfw  if integer == 1
+      return :nsfw if integer == 2
+      return :nsfl if integer == 4
+
+    end
+
   end
 end
