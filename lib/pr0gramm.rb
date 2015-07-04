@@ -1,6 +1,8 @@
+require 'pr0gramm/api'
 require 'pr0gramm/comment'
 require 'pr0gramm/flags'
 require 'pr0gramm/item'
+require 'pr0gramm/mark'
 require 'pr0gramm/requester'
 require 'pr0gramm/tag'
 require 'pr0gramm/user'
@@ -8,7 +10,9 @@ require 'pr0gramm/user'
 class Pr0gramm
 
   attr_accessor :flags
-  attr_reader :items, :requester
+  attr_reader :requester
+
+  include Pr0gramm::API
 
   def initialize(options = {})
 
@@ -23,20 +27,13 @@ class Pr0gramm
 
     @requester = Pr0gramm::Requester.new( options )
 
-    session = @requester.session
-
-    return if !session
-
     # TODO
-    # @flags = session[:flags]
+    # session = session
+    # @flags  = session[:flags]
   end
 
-  def user(name)
-
-    result = requester.get('/profile/info', { name: name, flags: @flags } )
-    user   = Pr0gramm::User.new( result )
-
-    user
+  def session
+    @requester.session
   end
 
 end
