@@ -94,7 +94,8 @@ class Pr0gramm
 
       logout_result = post( '/user/logout', { id: @session[:id], _nonce: @session[:id][0..16] } )
 
-      return if !login_result['success']
+      # TODO: Improve error handling
+      return if !logout_result['success']
 
       @session = nil
     end
