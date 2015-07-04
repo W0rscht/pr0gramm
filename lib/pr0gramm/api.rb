@@ -23,8 +23,6 @@ class Pr0gramm
       # result['cache']
       # result['qc']
 
-p result.inspect
-
       items = []
       result['items'].each{ |item|
         items.push( Pr0gramm::Item.new( item ) )
