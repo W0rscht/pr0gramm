@@ -9,7 +9,7 @@ require 'pr0gramm/user'
 
 class Pr0gramm
 
-  attr_accessor :flags
+  attr_accessor :flags, :promoted
   attr_reader :requester
 
   include Pr0gramm::API
