@@ -36,7 +36,7 @@ class Pr0gramm
 
       items = []
       result['items'].each{ |item|
-        items.push( Pr0gramm::Item.new( item ) )
+        items.push( Pr0gramm::Item.new( self, item ) )
       }
 
       items
