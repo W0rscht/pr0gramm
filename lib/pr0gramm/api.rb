@@ -10,7 +10,7 @@ class Pr0gramm
         name = session_data[:name]
       end
 
-      result = @requester.get('/profile/info', { name: name, flags: @flags })
+      result = @requester.api_get('/profile/info', { name: name, flags: @flags })
       user   = Pr0gramm::User.new( result )
 
       user
@@ -23,8 +23,7 @@ class Pr0gramm
         promoted: @promoted
       }.merge( parameter )
 
-
-      result = @requester.get('/items/get', parameter)
+      result = @requester.api_get('/items/get', parameter)
 
       # TODO:
       # result['atEnd']
@@ -44,7 +43,7 @@ class Pr0gramm
     end
 
     def item_info(item_id)
-      info = @requester.get('/items/info', { itemId: item_id })
+      info = @requester.api_get('/items/info', { itemId: item_id })
 
       tags = []
       info['tags'].each { |tag|
