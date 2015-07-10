@@ -2,7 +2,7 @@ class Pr0gramm
 
   module API
 
-    def user(name = nil)
+    def profile(name = nil)
 
       if !name
         session_data = session
@@ -11,9 +11,9 @@ class Pr0gramm
       end
 
       result = @requester.api_get('/profile/info', { name: name, flags: Pr0gramm::Flags.integer( @flags ) })
-      user   = Pr0gramm::User.new( self, result )
+      profile   = Pr0gramm::Profile.new( self, result )
 
-      user
+      profile
     end
 
     def items( parameter = {} )
@@ -35,7 +35,7 @@ class Pr0gramm
       # result['qc']
 
       items = []
-      result['items'].each{ |item|
+      result['items'].each { |item|
         items.push( Pr0gramm::Item.new( self, item ) )
       }
 

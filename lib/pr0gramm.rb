@@ -6,7 +6,7 @@ require 'pr0gramm/item'
 require 'pr0gramm/mark'
 require 'pr0gramm/requester'
 require 'pr0gramm/tag'
-require 'pr0gramm/user'
+require 'pr0gramm/profile'
 
 class Pr0gramm
 
