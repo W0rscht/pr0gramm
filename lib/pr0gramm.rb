@@ -1,4 +1,5 @@
 require 'pr0gramm/api'
+require 'pr0gramm/badge'
 require 'pr0gramm/comment'
 require 'pr0gramm/flags'
 require 'pr0gramm/item'
