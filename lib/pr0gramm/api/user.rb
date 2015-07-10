@@ -40,6 +40,16 @@ class Pr0gramm
         @messages
       end
 
+      def following
+
+        session_data = session
+        fail 'Not logged in.' if !session_data
+
+        fail 'You need to be a pr0mium user to use that feature.' if !session_data[:paid]
+
+        items({ following: true, promoted: nil })
+      end
+
     end
   end
 end
