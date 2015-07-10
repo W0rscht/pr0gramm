@@ -9,6 +9,9 @@ class Pr0gramm
           promoted: @promoted
         }.merge( parameter )
 
+        # TODO: less hacky
+        parameter[:promoted] = nil if !parameter[:promoted]
+
         result = @requester.api_get('/items/get', parameter)
 
         # TODO:
