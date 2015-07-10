@@ -26,7 +26,7 @@ class Pr0gramm
     # string = Pr0gramm::Flags.string( 8 )
     # string = Pr0gramm::Flags.string( 9 )
     def self.string(integer)
-      return MAPPING[ integer ]
+      return MAPPING[ integer.to_i ]
     end
 
     # integer = Pr0gramm::Flags.integer( 'Schwuchtel' )
