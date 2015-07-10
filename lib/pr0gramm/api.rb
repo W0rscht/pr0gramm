@@ -10,7 +10,7 @@ class Pr0gramm
         name = session_data[:name]
       end
 
-      result = @requester.api_get('/profile/info', { name: name, flags: @flags })
+      result = @requester.api_get('/profile/info', { name: name, flags: Pr0gramm::Flags.integer( @flags ) })
       user   = Pr0gramm::User.new( self, result )
 
       user
