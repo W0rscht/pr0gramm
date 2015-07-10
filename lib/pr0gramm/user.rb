@@ -15,7 +15,10 @@ class Pr0gramm
       @likes_are_public = user_data['account']['likesArePublic']
       @mark             = Pr0gramm::Mark.string( user_data['account']['mark'] )
       @mark_default     = Pr0gramm::Mark.string( user_data['account']['markDefault'] )
-      @paid_until       = Time.at( user_data['account']['paidUntil'].to_i ).to_datetime
+
+      if user_data['account']['paidUntil'] > 0
+        @paid_until = Time.at( user_data['account']['paidUntil'].to_i ).to_datetime
+      end
 
       @invited = []
       user_data['invited'].each { |invite|
