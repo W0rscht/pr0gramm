@@ -16,6 +16,13 @@ class Pr0gramm
       profile
     end
 
+    def user
+      fail 'Not logged in.' if !session
+
+      result = @requester.api_get('/user/info')
+      Pr0gramm::User.new(self, result)
+    end
+
     def items( parameter = {} )
 
       parameter = {

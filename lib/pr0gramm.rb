@@ -4,9 +4,10 @@ require 'pr0gramm/comment'
 require 'pr0gramm/flags'
 require 'pr0gramm/item'
 require 'pr0gramm/mark'
+require 'pr0gramm/profile'
 require 'pr0gramm/requester'
 require 'pr0gramm/tag'
-require 'pr0gramm/profile'
+require 'pr0gramm/user'
 
 class Pr0gramm
 
