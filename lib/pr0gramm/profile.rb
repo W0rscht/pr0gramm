@@ -25,15 +25,14 @@ class Pr0gramm
                 name: '1k'
             }
         ]
-    },
-    years: {
-        template: {
-            'image'       => 'years.png',
-            'link'        => '#user/%s',
-            'description' => 'Hat %d %s auf pr0gramm verschwendet',
-        },
-    }
-
+      },
+      years: {
+          template: {
+              'image'       => 'years.png',
+              'link'        => '#user/%s',
+              'description' => 'Hat %d %s auf pr0gramm verschwendet',
+          },
+      }
     }
 
     attr_reader :id, :name, :registered, :score, :mark, :admin, :banned,
