@@ -11,7 +11,7 @@ class Pr0gramm
       end
 
       result = @requester.api_get('/profile/info', { name: name, flags: @flags })
-      user   = Pr0gramm::User.new( result )
+      user   = Pr0gramm::User.new( self, result )
 
       user
     end
