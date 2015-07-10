@@ -10,7 +10,7 @@ class Pr0gramm
       @name       = comment_data['name']
       @content    = comment_data['content']
       @confidence = comment_data['confidence']
-      @created    = Time.at( comment_data['created'] ).to_datetime
+      @created    = Time.at( comment_data['created'].to_i ).to_datetime
       @down       = comment_data['down']
       @up         = comment_data['up']
       @mark       = comment_data['mark']

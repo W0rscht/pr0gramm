@@ -12,7 +12,7 @@ class Pr0gramm
 
       @id         = user_data['user']['id']
       @name       = user_data['user']['name']
-      @registered = Time.at( user_data['user']['registered'] ).to_datetime
+      @registered = Time.at( user_data['user']['registered'].to_i ).to_datetime
       @score      = user_data['user']['score']
       @mark       = Pr0gramm::Mark.string( user_data['user']['mark'] )
       @admin      = user_data['user']['admin'] == 1 ? true : false
