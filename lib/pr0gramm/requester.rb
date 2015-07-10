@@ -8,7 +8,7 @@ class Pr0gramm
 
   class Requester
 
-    attr_reader :session, :response
+    attr_reader :session, :response, :images_url, :fullsize_url, :thumbs_url
 
     include Pr0gramm::Requester::API
     include Pr0gramm::Requester::Content
@@ -41,6 +41,20 @@ class Pr0gramm
       return if !options[:username] || !options[:password]
 
       login(options[:username], options[:password])
+    end
+
+    def inspect
+
+      instance_vars = []
+      instance_variables.map { |var|
+
+        next if var.to_s == '@response'
+
+        val = instance_variable_get(var)
+        instance_vars.push( "#{var}=#{val || 'nil'}" )
+      }
+
+      "Pr0gramm::Requester:#{"0x00%x" % (object_id << 1)}) "+ instance_vars.join(', ')
     end
   end
 end
