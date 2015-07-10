@@ -8,7 +8,7 @@ class Pr0gramm
 
   class Requester
 
-    attr_reader :session, :response, :images_url, :fullsize_url, :thumbs_url
+    attr_reader :session, :response, :images_url, :fullsize_url, :thumbs_url, :badges_url
 
     include Pr0gramm::Requester::API
     include Pr0gramm::Requester::Content
@@ -22,11 +22,12 @@ class Pr0gramm
         use_subdomains: true,
       }.merge(options)
 
-      @protocol = options[:protocol]
-      @host     = options[:host]
-      @base_url = "#{@protocol}://#{@host}"
-      @api_url  = "#{@base_url}#{options[:api_path]}"
-      @session  = nil
+      @protocol   = options[:protocol]
+      @host       = options[:host]
+      @base_url   = "#{@protocol}://#{@host}"
+      @api_url    = "#{@base_url}#{options[:api_path]}"
+      @badges_url = "#{@base_url}/media/badges/"
+      @session    = nil
 
       if options[:use_subdomains]
         @images_url   = "#{@protocol}://img.#{@host}/"
