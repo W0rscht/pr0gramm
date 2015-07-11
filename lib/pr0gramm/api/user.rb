@@ -50,6 +50,37 @@ class Pr0gramm
         items({ following: true, promoted: nil })
       end
 
+      def settings_site( settings = {} )
+
+        session_data = session
+        fail 'Not logged in.' if !session_data
+
+        user_data = user
+
+        # TODO: refactor
+        user_status = 'default'
+        if session_data
+          if session_data[:paid] && user.mark == 'Edler Spender'
+            user_status = 'paid'
+          end
+        end
+
+        settings = {
+          likes_are_public: user_data.likes_are_public,
+          user_status:      user_status
+        }.merge(settings)
+
+        parameter = {
+          likesArePublic: settings[:likes_are_public] ? 1 : 0,
+          userStatus:     settings[:user_status],
+          showAds:        0, # sorry cha0s, only valid for current session
+          _nonce:         session_data[:nonce],
+        }
+
+        @requester.api_post('/user/sitesettings', parameter)
+
+        nil
+      end
     end
   end
 end
