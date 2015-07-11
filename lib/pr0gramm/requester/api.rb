@@ -61,7 +61,7 @@ class Pr0gramm
 
         return if !@session
 
-        logout_result = api_post( '/user/logout', { id: @session[:id], _nonce: @session[:id][0..16] } )
+        logout_result = api_post( '/user/logout', { id: @session[:id], _nonce: @session[:nonce] } )
 
         # TODO: Improve error handling
         return if !logout_result['success']
@@ -77,6 +77,7 @@ class Pr0gramm
 
         @session = {
           id:    session_cookie['id'],
+          nonce: session_cookie['id'][0..15],
           name:  session_cookie['n'],
           paid:  session_cookie['paid'],
           pp:    session_cookie['pp'], # TODO: ?
