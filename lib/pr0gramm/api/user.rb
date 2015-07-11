@@ -90,10 +90,25 @@ class Pr0gramm
         parameter = {
           _nonce:          session_data[:nonce],
           currentPassword: @requester.password,
-          email:           new_email
+          email:           new_email,
         }
 
         @requester.api_post('/user/requestemailchange', parameter)
+
+        nil
+      end
+
+      def invite( email )
+
+        session_data = session
+        fail 'Not logged in.' if !session_data
+
+        parameter = {
+          _nonce: session_data[:nonce],
+          email:  email,
+        }
+
+        @requester.api_post('/user/invite', parameter)
 
         nil
       end
