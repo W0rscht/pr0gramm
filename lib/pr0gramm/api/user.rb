@@ -81,6 +81,23 @@ class Pr0gramm
 
         nil
       end
+
+      def request_email_change( new_email )
+
+        session_data = session
+        fail 'Not logged in.' if !session_data
+
+        parameter = {
+          _nonce:          session_data[:nonce],
+          currentPassword: @requester.password,
+          email:           new_email
+        }
+
+        @requester.api_post('/user/requestemailchange', parameter)
+
+        nil
+      end
+
     end
   end
 end
