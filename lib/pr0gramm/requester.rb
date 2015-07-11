@@ -8,7 +8,9 @@ class Pr0gramm
 
   class Requester
 
-    attr_reader :session, :response, :images_url, :fullsize_url, :thumbs_url, :badges_url
+    attr_reader :session, :response, :images_url, :fullsize_url, :thumbs_url, :badges_url,
+                :username, :password
+
 
     include Pr0gramm::Requester::API
     include Pr0gramm::Requester::Content
@@ -41,6 +43,9 @@ class Pr0gramm
 
       return if !options[:username] || !options[:password]
 
+      @username = options[:username]
+      @password = options[:password]
+
       login(options[:username], options[:password])
     end
 
@@ -50,6 +55,7 @@ class Pr0gramm
       instance_variables.map { |var|
 
         next if var.to_s == '@response'
+        next if var.to_s == '@password'
 
         val = instance_variable_get(var)
         instance_vars.push( "#{var}=#{val || 'nil'}" )
