@@ -14,5 +14,9 @@ class Pr0gramm
       @sender_mark    = Pr0gramm::Mark.string( message_data['mark'] )
       @created        = Time.at( message_data['created'].to_i ).to_datetime
     end
+
+    def reply(comment)
+      @api.private_message( @sender_name, comment )
+    end
   end
 end
