@@ -25,7 +25,7 @@ class Pr0gramm
         @messages = []
         result['messages'].each { |message|
 
-          next if message['itemId']
+          next if message['itemId'] > 0
           # TODO: comment lookup to Pr0gramm::Comment
           # @item_id    = message['itemId']
           # @name       = message['name']
