@@ -40,6 +40,24 @@ class Pr0gramm
         @messages
       end
 
+      def private_message( recipient, comment )
+
+        session_data = session
+        fail 'Not logged in.' if !session_data
+
+        profile = profile( recipient )
+
+        parameter = {
+          recipientId: profile.id,
+          comment:     comment,
+          _nonce:      session_data[:nonce],
+        }
+
+        @requester.api_post('/inbox/post', parameter)
+
+        nil
+      end
+
       def following
 
         session_data = session
