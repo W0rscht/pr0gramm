@@ -19,7 +19,6 @@ class Pr0gramm
         end
 
         @response = RestClient.get "#{@api_url}#{route}", request_data
-        @cookies  = @response.cookies
 
         JSON.parse @response.to_str
       end
@@ -30,12 +29,11 @@ class Pr0gramm
           :accept => :json,
         }.merge( request_data )
 
-        if ( @cookies )
+        if @cookies
           request_data[:cookies] = @cookies
         end
 
         @response = RestClient.post "#{@api_url}#{route}", parameter, request_data
-        @cookies  = @response.cookies
 
          JSON.parse @response.to_str
       end
@@ -53,6 +51,12 @@ class Pr0gramm
         fail "User '#{username}' is banned." if login_result['ban']
 
         fail "Login for user '#{username}' failed." if !login_result['success']
+
+        if !@response.cookies || @response.cookies.empty?
+          fail "Can't extract cookies after login from request."
+        end
+
+        @cookies  = @response.cookies
 
         cookies_to_session
       end
