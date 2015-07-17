@@ -156,6 +156,23 @@ class Pr0gramm
         @requester.api_post('/tags/add', parameter)
         nil
       end
+
+      def comment(item_id, comment, partent_id)
+
+        session_data = @requester.session
+
+        fail 'Not logged in.' if !session_data
+
+        parameter = {
+          _nonce:   session_data[:nonce],
+          itemId:   item_id,
+          parentId: partent_id,
+          comment:  comment,
+        }
+
+        @requester.api_post('/comments/post', parameter)
+        nil
+      end
     end
   end
 end
