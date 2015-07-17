@@ -106,6 +106,10 @@ class Pr0gramm
       @api.comment(@id, comment)
     end
 
+    def tag(tags)
+      @api.taf(@id, tags)
+    end
+
     private
 
     def path(destination, fallback)
