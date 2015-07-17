@@ -140,6 +140,22 @@ class Pr0gramm
         @requester.api_post("/#{object}s/vote", parameter)
         nil
       end
+
+      def tag(item_id, tags)
+
+        session_data = @requester.session
+
+        fail 'Not logged in.' if !session_data
+
+        parameter = {
+          _nonce: session_data[:nonce],
+          itemId: item_id,
+          tags:   tags.join(','),
+        }
+
+        @requester.api_post('/tags/add', parameter)
+        nil
+      end
     end
   end
 end
