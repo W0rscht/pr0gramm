@@ -46,12 +46,12 @@ class Pr0gramm
 
         tags = []
         info['tags'].each { |tag|
-          tags.push( Pr0gramm::Tag.new( tag ) )
+          tags.push( Pr0gramm::Tag.new( self, tag ) )
         }
 
         comments = []
         info['comments'].each { |comment|
-          comments.push( Pr0gramm::Comment.new( comment ) )
+          comments.push( Pr0gramm::Comment.new( self, comment ) )
         }
 
         {
@@ -123,6 +123,22 @@ class Pr0gramm
 
         # "{\"error\"=>nil, \"selfPosted\"=>true, \"item\"=>{\"id\"=>893147}, \"ts\"=>1436885732, \"cache\"=>nil, \"rt\"=>733, \"qc\"=>53}"
         return result['item']['id']
+      end
+
+      def vote( object, id, vote )
+
+        session_data = @requester.session
+
+        fail 'Not logged in.' if !session_data
+
+        parameter = {
+          _nonce: session_data[:nonce],
+          id:     id,
+          vote:   vote,
+        }
+
+        @requester.api_post("/#{object}s/vote", parameter)
+        nil
       end
     end
   end

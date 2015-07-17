@@ -4,21 +4,21 @@ class Pr0gramm
 
   class Item
 
-    attr_reader :id, :promoted, :up, :down, :created, :image_url,
+    attr_reader :id, :promoted, :votes_up, :votes_down, :created, :image_url,
                 :thumb_url, :fullsize_url, :source, :flags, :user, :mark
 
     def initialize(api, item_data)
 
       @api = api
 
-      @id       = item_data['id']
-      @promoted = item_data['promoted']
-      @up       = item_data['up']
-      @down     = item_data['down']
-      @created  = Time.at( item_data['created'].to_i ).to_datetime
-      @flags    = Pr0gramm::Flags.symbol( item_data['flags'] )
-      @user     = item_data['user'] # TODO
-      @mark     = Pr0gramm::Mark.string( item_data['mark'] )
+      @id         = item_data['id']
+      @promoted   = item_data['promoted']
+      @votes_up   = item_data['up']
+      @votes_down = item_data['down']
+      @created    = Time.at( item_data['created'].to_i ).to_datetime
+      @flags      = Pr0gramm::Flags.symbol( item_data['flags'] )
+      @user       = item_data['user'] # TODO
+      @mark       = Pr0gramm::Mark.string( item_data['mark'] )
 
       if !item_data['source'].empty?
         @source = item_data['source']
@@ -80,6 +80,26 @@ class Pr0gramm
       File.open(destination, 'wb') do |output|
         output.write fullsize
       end
+    end
+
+    def vote(vote)
+      @api.vote('item', @id, vote)
+    end
+
+    def fav
+      vote(2)
+    end
+
+    def unfav
+      up
+    end
+
+    def up
+      vote(1)
+    end
+
+    def down
+      vote(-1)
     end
 
     private
