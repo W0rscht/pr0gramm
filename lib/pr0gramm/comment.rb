@@ -4,9 +4,11 @@ class Pr0gramm
 
     attr_reader :id, :name, :content, :confidence, :created, :votes_down, :votes_up, :mark, :parent
 
-    def initialize(api, comment_data)
+    def initialize(api, item_id, comment_data)
 
       @api = api
+
+      @item_id = item_id
 
       @id         = comment_data['id']
       @name       = comment_data['name']
@@ -29,6 +31,10 @@ class Pr0gramm
 
     def down
       vote(-1)
+    end
+
+    def reply(comment)
+      @api.comment(@item_id, comment, @id)
     end
   end
 end

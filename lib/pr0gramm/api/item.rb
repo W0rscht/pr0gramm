@@ -51,7 +51,7 @@ class Pr0gramm
 
         comments = []
         info['comments'].each { |comment|
-          comments.push( Pr0gramm::Comment.new( self, comment ) )
+          comments.push( Pr0gramm::Comment.new( self, item_id, comment ) )
         }
 
         {
