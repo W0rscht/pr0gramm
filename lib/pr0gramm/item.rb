@@ -102,6 +102,10 @@ class Pr0gramm
       vote(-1)
     end
 
+    def comment(comment)
+      @api.comment(@id, comment)
+    end
+
     private
 
     def path(destination, fallback)
