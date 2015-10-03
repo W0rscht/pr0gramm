@@ -9,26 +9,25 @@ require 'pr0gramm/profile'
 require 'pr0gramm/requester'
 require 'pr0gramm/tag'
 require 'pr0gramm/user'
+require 'pr0gramm/version'
 
 class Pr0gramm
-
   attr_accessor :flags, :promoted
   attr_reader :requester
 
   include Pr0gramm::API
 
   def initialize(options = {})
-
     options = {
       flags:    [:sfw],
-      promoted: true,
+      promoted: true
     }.merge(options)
 
     @promoted   = options[:promoted] # 'beliebt'
     @flags      = options[:flags]
     @last_flags = []
 
-    @requester = Pr0gramm::Requester.new( options )
+    @requester = Pr0gramm::Requester.new(options)
 
     # TODO
     # session = session

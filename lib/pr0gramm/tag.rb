@@ -1,11 +1,8 @@
 class Pr0gramm
-
   class Tag
-
     attr_reader :id, :tag, :confidence
 
     def initialize(api, tag_data)
-
       @api = api
 
       @id         = tag_data['id']

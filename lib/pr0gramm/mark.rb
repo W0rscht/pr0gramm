@@ -1,7 +1,5 @@
 class Pr0gramm
-
   module Mark
-
     MAPPING = {
       0 => 'Schwuchtel',
       1 => 'Neuschwuchtel',
@@ -12,37 +10,36 @@ class Pr0gramm
       6 => 'Fliesentischbesitzer',
       7 => 'Lebende Legende',
       8 => 'pr0wichtler',
-      9 => 'Edler Spender',
+      9 => 'Edler Spender'
     }
 
-    # string = Pr0gramm::Flags.string( 0 )
-    # string = Pr0gramm::Flags.string( 1 )
-    # string = Pr0gramm::Flags.string( 2 )
-    # string = Pr0gramm::Flags.string( 3 )
-    # string = Pr0gramm::Flags.string( 4 )
-    # string = Pr0gramm::Flags.string( 5 )
-    # string = Pr0gramm::Flags.string( 6 )
-    # string = Pr0gramm::Flags.string( 7 )
-    # string = Pr0gramm::Flags.string( 8 )
-    # string = Pr0gramm::Flags.string( 9 )
-    def self.string(integer)
-      return MAPPING[ integer.to_i ]
+    # string = Pr0gramm::Mark.string( 0 )
+    # string = Pr0gramm::Mark.string( 1 )
+    # string = Pr0gramm::Mark.string( 2 )
+    # string = Pr0gramm::Mark.string( 3 )
+    # string = Pr0gramm::Mark.string( 4 )
+    # string = Pr0gramm::Mark.string( 5 )
+    # string = Pr0gramm::Mark.string( 6 )
+    # string = Pr0gramm::Mark.string( 7 )
+    # string = Pr0gramm::Mark.string( 8 )
+    # string = Pr0gramm::Mark.string( 9 )
+    def self.string(digit)
+      MAPPING[digit.to_i]
     end
 
-    # integer = Pr0gramm::Flags.integer( 'Schwuchtel' )
-    # integer = Pr0gramm::Flags.integer( 'Neuschwuchtel' )
-    # integer = Pr0gramm::Flags.integer( 'Altschwuchtel' )
-    # integer = Pr0gramm::Flags.integer( 'Admin' )
-    # integer = Pr0gramm::Flags.integer( 'Gesperrt' )
-    # integer = Pr0gramm::Flags.integer( 'Moderator' )
-    # integer = Pr0gramm::Flags.integer( 'Fliesentischbesitzer' )
-    # integer = Pr0gramm::Flags.integer( 'Lebende Legende' )
-    # integer = Pr0gramm::Flags.integer( 'pr0wichtler' )
-    # integer = Pr0gramm::Flags.integer( 'Edler Spender' )
-    def self.integer(string)
+    # digit = Pr0gramm::Mark.digit( 'Schwuchtel' )
+    # digit = Pr0gramm::Mark.digit( 'Neuschwuchtel' )
+    # digit = Pr0gramm::Mark.digit( 'Altschwuchtel' )
+    # digit = Pr0gramm::Mark.digit( 'Admin' )
+    # digit = Pr0gramm::Mark.digit( 'Gesperrt' )
+    # digit = Pr0gramm::Mark.digit( 'Moderator' )
+    # digit = Pr0gramm::Mark.digit( 'Fliesentischbesitzer' )
+    # digit = Pr0gramm::Mark.digit( 'Lebende Legende' )
+    # digit = Pr0gramm::Mark.digit( 'pr0wichtler' )
+    # digit = Pr0gramm::Mark.digit( 'Edler Spender' )
+    def self.digit(string)
       mapping_inverted = MAPPING.invert
-      return mapping_inverted[ string ]
+      mapping_inverted[string]
     end
-
   end
 end

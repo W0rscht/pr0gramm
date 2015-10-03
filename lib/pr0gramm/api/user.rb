@@ -1,21 +1,15 @@
 class Pr0gramm
   module API
     module User
-
-      def session
-        @requester.session
-      end
-
       def user
-        fail 'Not logged in.' if !session
+        session
 
         result = @requester.api_get('/user/info')
         Pr0gramm::User.new(self, result)
       end
 
-      def inbox( inbox_type = :all )
-
-        fail 'Not logged in.' if !session
+      def inbox(inbox_type = :all)
+        session
 
         result = @requester.api_get("/inbox/#{inbox_type}")
 
@@ -23,9 +17,8 @@ class Pr0gramm
         # TODO: result['hasOlder']
 
         @messages = []
-        result['messages'].each { |message|
-
-          next if message['itemId'] > 0
+        result['messages'].each do |message|
+          next if message['itemId']
           # TODO: comment lookup to Pr0gramm::Comment
           # @item_id    = message['itemId']
           # @name       = message['name']
@@ -34,23 +27,21 @@ class Pr0gramm
           # @thumb_path = message['thumb']
           # @thumb_url  = "#{@api.requester.thumbs_url}#{thumb_path}"
 
-          @messages.push( Pr0gramm::Message.new( self, message ) )
-        }
+          @messages.push(Pr0gramm::Message.new(self, message))
+        end
 
         @messages
       end
 
-      def private_message( recipient, comment )
-
+      def private_message(recipient, comment)
         session_data = session
-        fail 'Not logged in.' if !session_data
 
-        profile = profile( recipient )
+        profile = profile(recipient)
 
         parameter = {
           recipientId: profile.id,
           comment:     comment,
-          _nonce:      session_data[:nonce],
+          _nonce:      session_data[:nonce]
         }
 
         @requester.api_post('/inbox/post', parameter)
@@ -59,21 +50,15 @@ class Pr0gramm
       end
 
       def following
-
         session_data = session
-        fail 'Not logged in.' if !session_data
 
-        fail 'You need to be a pr0mium user to use that feature.' if !session_data[:paid]
+        fail 'Pr0mium needed to use that feature.' unless session_data[:paid]
 
-        items({ following: true, promoted: nil })
+        items(following: true, promoted: false)
       end
 
-      def settings_site( settings = {} )
-
+      def settings_site(settings = {})
         session_data = session
-        fail 'Not logged in.' if !session_data
-
-        user_data = user
 
         # TODO: refactor
         user_status = 'default'
@@ -83,32 +68,20 @@ class Pr0gramm
           end
         end
 
-        settings = {
-          likes_are_public: user_data.likes_are_public,
-          user_status:      user_status
-        }.merge(settings)
-
-        parameter = {
-          likesArePublic: settings[:likes_are_public] ? 1 : 0,
-          userStatus:     settings[:user_status],
-          showAds:        0, # sorry cha0s, only valid for current session
-          _nonce:         session_data[:nonce],
-        }
+        parameter = build_settings_paramter(settings, user_status)
 
         @requester.api_post('/user/sitesettings', parameter)
 
         nil
       end
 
-      def request_email_change( new_email )
-
+      def request_email_change(new_email)
         session_data = session
-        fail 'Not logged in.' if !session_data
 
         parameter = {
           _nonce:          session_data[:nonce],
           currentPassword: @requester.password,
-          email:           new_email,
+          email:           new_email
         }
 
         @requester.api_post('/user/requestemailchange', parameter)
@@ -116,14 +89,12 @@ class Pr0gramm
         nil
       end
 
-      def invite( email )
-
+      def invite(email)
         session_data = session
-        fail 'Not logged in.' if !session_data
 
         parameter = {
           _nonce: session_data[:nonce],
-          email:  email,
+          email:  email
         }
 
         @requester.api_post('/user/invite', parameter)
@@ -131,6 +102,28 @@ class Pr0gramm
         nil
       end
 
+      private
+
+      def build_settings_paramter(settings, user_status)
+        session_data = session
+        settings     = merge_settings(settings, user_status)
+
+        {
+          likesArePublic: settings[:likes_are_public] ? 1 : 0,
+          userStatus:     settings[:user_status],
+          showAds:        0, # sorry cha0s, only valid for current session
+          _nonce:         session_data[:nonce]
+        }
+      end
+
+      def merge_settings(settings, user_status)
+        user_data = user
+
+        {
+          likes_are_public: user_data.likes_are_public,
+          user_status:      user_status
+        }.merge(settings)
+      end
     end
   end
 end

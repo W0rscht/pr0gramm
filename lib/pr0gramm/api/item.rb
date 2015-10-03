@@ -4,137 +4,34 @@ require 'mime/types'
 class Pr0gramm
   module API
     module Item
-
       ALLOWED_UPLOAD_TYPES = [
-          'image/png',
-          'image/jpeg',
-          'image/gif',
-          'video/webm'
+        'image/png',
+        'image/jpeg',
+        'image/gif',
+        'video/webm'
       ]
 
-      def items( parameter = {} )
-
-        parameter = {
-          flags:    @flags,
-          promoted: @promoted
-        }.merge( parameter )
-
-        # TODO: less hacky
-        parameter[:promoted] = nil if !parameter[:promoted]
-
-        result = @requester.api_get('/items/get', parameter)
-
-        # TODO:
-        # result['atEnd']
-        # result['atStart']
-        # result['error']
-        # result['ts']
-        # result['rt']
-        # result['cache']
-        # result['qc']
-
-        items = []
-        result['items'].each { |item|
-          items.push( Pr0gramm::Item.new( self, item ) )
-        }
-
-        items
-      end
-
-      def item_info(item_id)
-        info = @requester.api_get('/items/info', { itemId: item_id })
-
-        tags = []
-        info['tags'].each { |tag|
-          tags.push( Pr0gramm::Tag.new( self, tag ) )
-        }
-
-        comments = []
-        info['comments'].each { |comment|
-          comments.push( Pr0gramm::Comment.new( self, item_id, comment ) )
-        }
-
-        {
-          comments: comments,
-          tags:     tags
-        }
-      end
-
       def upload(file, flag, tags, check_similar = true)
-
-        session_data = @requester.session
-
-        fail 'Not logged in.' if !session_data
-
-        flag_state = flag.to_s
-        if flag_state != 'sfw'
-          tags.push(flag_state)
-        end
-
-        parameter = {
-          _nonce:       session_data[:nonce],
-          tags:         tags.join(','),
-          sfwstatus:    flag_state,
-          checkSimilar: check_similar ? 1 : 0,
-        }
-
-        # URL
-        if file =~ /\A#{URI::regexp(['http', 'https'])}\z/
-          parameter[:imageUrl] = file
-        else
-          mime = MIME::Types.type_for file
-
-          mime_type = 'unknown'
-          if !mime.empty? && mime[0].content_type
-            mime_type = mime[0].content_type
-          end
-
-          if !ALLOWED_UPLOAD_TYPES.include?( mime_type )
-            fail "Invalid mime type '#{mime_type}' for file '#{file}'."
-          end
-
-          file_size_mb = File.size( file ).to_f / 2**20
-
-          if file_size_mb > 4.0
-
-
-            if !session_data[:paid] || file_size_mb > 8.0
-              fail "File '#{file}' is to big: #{file_size_mb} MB."
-            end
-          end
-
-          # TODO: resoultion, megapixel, duration
-
-          result = @requester.api_post('/items/upload', { image: File.new(file, 'rb') })
-
-          parameter[:key] = result['key']
-        end
+        parameter = build_parameter(file, flag, tags, check_similar)
 
         result = @requester.api_post('/items/post', parameter)
 
         # TODO: Pr0gramm::Item.new?
-        if result['similar']
-          return result['similar']
-        end
+        return result['similar'] if result['similar']
 
-        if result['error']
-          fail "Upload error: #{result['error']}."
-        end
+        fail "Upload error: #{result['error']}." if result['error']
 
-        # "{\"error\"=>nil, \"selfPosted\"=>true, \"item\"=>{\"id\"=>893147}, \"ts\"=>1436885732, \"cache\"=>nil, \"rt\"=>733, \"qc\"=>53}"
-        return result['item']['id']
+        # TODO: Pr0gramm::Item.new?
+        result['item']['id']
       end
 
-      def vote( object, id, vote )
-
-        session_data = @requester.session
-
-        fail 'Not logged in.' if !session_data
+      def vote(object, id, vote)
+        session_data = session
 
         parameter = {
           _nonce: session_data[:nonce],
           id:     id,
-          vote:   vote,
+          vote:   vote
         }
 
         @requester.api_post("/#{object}s/vote", parameter)
@@ -142,15 +39,12 @@ class Pr0gramm
       end
 
       def tag(item_id, tags)
-
-        session_data = @requester.session
-
-        fail 'Not logged in.' if !session_data
+        session_data = session
 
         parameter = {
           _nonce: session_data[:nonce],
           itemId: item_id,
-          tags:   tags.join(','),
+          tags:   tags.join(',')
         }
 
         @requester.api_post('/tags/add', parameter)
@@ -158,20 +52,85 @@ class Pr0gramm
       end
 
       def comment(item_id, comment, partent_id)
-
-        session_data = @requester.session
-
-        fail 'Not logged in.' if !session_data
+        session_data = session
 
         parameter = {
           _nonce:   session_data[:nonce],
           itemId:   item_id,
           parentId: partent_id,
-          comment:  comment,
+          comment:  comment
         }
 
         @requester.api_post('/comments/post', parameter)
         nil
+      end
+
+      private
+
+      def check_file_size(file)
+        file_size_mb = File.size(file).to_f / 2**20
+
+        return if file_size_mb <= 4.0
+        return if session_data[:paid] && file_size_mb <= 8.0
+
+        fail "File '#{file}' is to big: #{file_size_mb} MB."
+      end
+
+      def check_mime_type(file)
+        mime = MIME::Types.type_for file
+
+        fail "Unknown mime type for file '#{file}'." if mime.empty?
+
+        valid = false
+        mime.each do |detected|
+          next unless ALLOWED_UPLOAD_TYPES.include?(detected.content_type)
+          valid = true
+          break
+        end
+
+        return if valid
+
+        fail "Invalid mime type '#{mime_type}' for file '#{file}'."
+      end
+
+      def build_parameter(flag, tags, check_similar, file)
+        session_data = session
+
+        flag_state = flag.to_s
+        tags.push(flag_state) if flag_state != 'sfw'
+
+        parameter = {
+          _nonce:       session_data[:nonce],
+          tags:         tags.join(','),
+          sfwstatus:    flag_state,
+          checkSimilar: check_similar ? 1 : 0
+        }
+
+        process_file(file, parameter)
+      end
+
+      def process_file(file, parameter)
+        # URL
+        if file =~ /\A#{URI.regexp(%w(http https))}\z/
+          parameter[:imageUrl] = file
+        else
+          parameter[:key] = upload_key(file)
+        end
+
+        parameter
+      end
+
+      def upload_key(file)
+        check_mime_type(file)
+        check_file_size(file)
+
+        # TODO: resoultion, megapixel, duration
+
+        file_handle = File.new(file, 'rb')
+
+        result = @requester.api_post('/items/upload', image: file_handle)
+
+        result['key']
       end
     end
   end

@@ -1,53 +1,26 @@
-require 'uri'
+require 'pr0gramm/item/paths'
 
 class Pr0gramm
-
   class Item
+    include Pr0gramm::Item::Paths
 
     attr_reader :id, :promoted, :votes_up, :votes_down, :created, :image_url,
                 :thumb_url, :fullsize_url, :source, :flags, :user, :mark
 
     def initialize(api, item_data)
-
       @api = api
 
-      @id         = item_data['id']
-      @promoted   = item_data['promoted']
-      @votes_up   = item_data['up']
-      @votes_down = item_data['down']
-      @created    = Time.at( item_data['created'].to_i ).to_datetime
-      @flags      = Pr0gramm::Flags.symbol( item_data['flags'] )
-      @user       = item_data['user'] # TODO
-      @mark       = Pr0gramm::Mark.string( item_data['mark'] )
-
-      if !item_data['source'].empty?
-        @source = item_data['source']
-      end
-
-      if !item_data['image'].empty?
-        @image_path = item_data['image']
-        @image_url  = "#{api.requester.images_url}#{@image_path}"
-      end
-
-      if !item_data['thumb'].empty?
-        @thumb_path = item_data['thumb']
-        @thumb_url  = "#{api.requester.thumbs_url}#{@thumb_path}"
-      end
-
-      if !item_data['fullsize'].empty?
-        @fullsize_path = item_data['fullsize']
-        @fullsize_url  = "#{api.requester.fullsize_url}#{@fullsize_path}"
-      end
+      to_instance_vars(item_data)
+      to_item_paths(item_data)
     end
 
     def image
-      return if !@image_path
-      @api.requester.image( @image_path )
+      return unless @image_path
+      @api.requester.image(@image_path)
     end
 
-    def save_image(destination='')
-
-      destination = path( destination, @image_path )
+    def save_image(destination = '')
+      destination = path(destination, @image_path)
 
       File.open(destination, 'wb') do |output|
         output.write image
@@ -55,13 +28,12 @@ class Pr0gramm
     end
 
     def thumb
-      return if !@thumb_path
-      @api.requester.thumb( @thumb_path )
+      return unless @thumb_path
+      @api.requester.thumb(@thumb_path)
     end
 
-    def save_thumb(destination='')
-
-      destination = path( destination, @thumb_path )
+    def save_thumb(destination = '')
+      destination = path(destination, @thumb_path)
 
       File.open(destination, 'wb') do |output|
         output.write thumb
@@ -69,13 +41,12 @@ class Pr0gramm
     end
 
     def fullsize
-      return if !@fullsize_path
-      @api.requester.fullsize( @fullsize_path )
+      return unless @fullsize_path
+      @api.requester.fullsize(@fullsize_path)
     end
 
-    def save_fullsize(destination='')
-
-      destination = path( destination, @fullsize_path )
+    def save_fullsize(destination = '')
+      destination = path(destination, @fullsize_path)
 
       File.open(destination, 'wb') do |output|
         output.write fullsize
@@ -107,29 +78,33 @@ class Pr0gramm
     end
 
     def tag(tags)
-      @api.taf(@id, tags)
+      @api.tag(@id, tags)
     end
 
     private
 
-    def path(destination, fallback)
+    def to_instance_vars(item_data)
+      item_data = prepare_instance_vars(item_data)
 
-      directory = ''
-      filename  = ''
-      if destination.empty?
-        uri      = URI.parse( fallback )
-        filename = File.basename(uri.path)
-      elsif File.directory?(destination)
-        directory = destination
-        uri       = URI.parse( fallback )
-        filename  = File.basename(uri.path)
-      else
-        directory = File.dirname( destination ) +'/'
-        filename  = File.basename( destination )
-      end
-
-      "#{directory}#{filename}"
+      @id         = item_data['id']
+      @promoted   = item_data['promoted']
+      @votes_up   = item_data['up']
+      @votes_down = item_data['down']
+      @created    = item_data['created']
+      @flags      = item_data['flags']
+      @user       = item_data['user'] # TODO
+      @mark       = item_data['mark']
+      @source     = item_data['source']
     end
 
+    def prepare_instance_vars(item_data)
+      created_unix = item_data['created'].to_i
+      source       = item_data['source'].empty? ? nil : item_data['source']
+
+      item_data.merge('created' => Time.at(created_unix).to_datetime,
+                      'flags'   => Pr0gramm::Flags.symbol(item_data['flags']),
+                      'mark'    => Pr0gramm::Mark.string(item_data['mark']),
+                      'source'  => source)
+    end
   end
 end

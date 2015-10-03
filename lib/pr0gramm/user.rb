@@ -1,33 +1,52 @@
 require 'time_difference'
 
 class Pr0gramm
-
   class User
-
-    attr_reader :email, :invites, :likes_are_public, :mark, :mark_default, :paid_until, :invited
+    attr_reader :email, :invites, :likes_are_public, :mark,
+                :mark_default, :paid_until, :invited
 
     def initialize(api, user_data)
-
       @api = api
 
-      @email            = user_data['account']['email']
-      @invites          = user_data['account']['invites']
-      @likes_are_public = user_data['account']['likesArePublic']
-      @mark             = Pr0gramm::Mark.string( user_data['account']['mark'] )
-      @mark_default     = Pr0gramm::Mark.string( user_data['account']['markDefault'] )
+      to_instance_vars(user_data['account'])
+    end
 
-      if user_data['account']['paidUntil'] > 0
-        @paid_until = Time.at( user_data['account']['paidUntil'].to_i ).to_datetime
+    private
+
+    def to_instance_vars(account_data)
+      account_data = prepare_instance_vars(account_data)
+
+      @email            = account_data['email']
+      @invites          = account_data['invites']
+      @likes_are_public = account_data['likesArePublic']
+      @mark             = account_data['mark']
+      @mark_default     = account_data['markDefault']
+      @paid_until       = account_data['paidUntil']
+
+      to_invited(user_data['invited'])
+    end
+
+    def prepare_instance_vars(account_data)
+      if account_data['paidUntil'] <= 0
+        account_data['paidUntil'].delete
+      else
+        paid_until_unix           = account_data['paidUntil'].to_i
+        account_data['paidUntil'] = Time.at(paid_until_unix).to_datetime
       end
 
+      account_data.merge(
+        'mark'        => Pr0gramm::Mark.string(account_data['mark']),
+        'markDefault' => Pr0gramm::Mark.string(account_data['markDefault'])
+      )
+    end
+
+    def to_invited(list)
       @invited = []
-      user_data['invited'].each { |invite|
-        @invited.push({
-          email:   invite['email'],
-          mark: Pr0gramm::Mark.string( invite['mark'] ),
-          created: Time.at( invite['created'].to_i ).to_datetime
-        })
-      }
+      list.each do |invite|
+        @invited.push(email:   invite['email'],
+                      mark:    Pr0gramm::Mark.string(invite['mark']),
+                      created: Time.at(invite['created'].to_i).to_datetime)
+      end
     end
   end
 end

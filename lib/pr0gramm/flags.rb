@@ -1,28 +1,25 @@
 class Pr0gramm
-
   module Flags
-
     MAPPING = {
       sfw:  1,
       nsfw: 2,
-      nsfl: 4,
+      nsfl: 4
     }
     REVERSED_MAPPING = MAPPING.invert
 
-    # integer = Pr0gramm::Flags.integer( [:sfw] )
-    # integer = Pr0gramm::Flags.integer( [:nsfw] )
-    # integer = Pr0gramm::Flags.integer( [:sfw, :nsfw] )
-    # integer = Pr0gramm::Flags.integer( [:nsfl] )
-    # integer = Pr0gramm::Flags.integer( [:sfw, :nsfl] )
-    # integer = Pr0gramm::Flags.integer( [:nsfw, :nsfl] )
-    # integer = Pr0gramm::Flags.integer( [:sfw, :nsfw, :nsfl] )
-    def self.integer(array)
-
+    # digit = Pr0gramm::Flags.digit( [:sfw] )
+    # digit = Pr0gramm::Flags.digit( [:nsfw] )
+    # digit = Pr0gramm::Flags.digit( [:sfw, :nsfw] )
+    # digit = Pr0gramm::Flags.digit( [:nsfl] )
+    # digit = Pr0gramm::Flags.digit( [:sfw, :nsfl] )
+    # digit = Pr0gramm::Flags.digit( [:nsfw, :nsfl] )
+    # digit = Pr0gramm::Flags.digit( [:sfw, :nsfw, :nsfl] )
+    def self.digit(array)
       flags = 0
-      MAPPING.each { |flag, digit|
-        next if !array.include?( flag )
+      MAPPING.each do |flag, digit|
+        next unless array.include?(flag)
         flags += digit
-      }
+      end
       flags
     end
 
@@ -33,27 +30,26 @@ class Pr0gramm
     # array = Pr0gramm::Flags.array(5)
     # array = Pr0gramm::Flags.array(6)
     # array = Pr0gramm::Flags.array(7)
-    def self.array(integer)
+    def self.array(lookup)
+      lookup = lookup.to_i
 
       array = []
-      REVERSED_MAPPING.each { |digit, flag|
+      REVERSED_MAPPING.sort_by { |_k, v| v }.each do |digit, flag|
+        next if digit > lookup
 
-        next if digit > integer
+        array.push(flag)
 
-        array.push( flag )
+        lookup -= digit
+      end
 
-        integer -= digit
-      }
-
-     array
+      array.reverse
     end
 
     # symbol = Pr0gramm::Flags.symbol(1)
     # symbol = Pr0gramm::Flags.symbol(2)
     # symbol = Pr0gramm::Flags.symbol(4)
-    def self.symbol(integer)
-      REVERSED_MAPPING[integer]
+    def self.symbol(digit)
+      REVERSED_MAPPING[digit]
     end
-
   end
 end

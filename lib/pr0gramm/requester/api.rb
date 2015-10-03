@@ -4,19 +4,13 @@ require 'uri'
 class Pr0gramm
   class Requester
     module API
-
       def api_get(route = '', parameter = {}, request_data = {})
-
         request_data = {
-          accept: :json,
+          accept: :json
         }.merge(request_data)
 
-        if parameter
-          request_data[:params] = parameter
-        end
-        if @cookies
-          request_data[:cookies] = @cookies
-        end
+        request_data[:params] = parameter if parameter
+        request_data[:cookies] = @cookies if @cookies
 
         @response = RestClient.get "#{@api_url}#{route}", request_data
 
@@ -24,61 +18,46 @@ class Pr0gramm
       end
 
       def api_post(route = '', parameter = {}, request_data = {})
-
         request_data = {
-          :accept => :json,
-        }.merge( request_data )
+          accept: :json
+        }.merge(request_data)
 
-        if @cookies
-          request_data[:cookies] = @cookies
-        end
+        request_data[:cookies] = @cookies if @cookies
 
-        @response = RestClient.post "#{@api_url}#{route}", parameter, request_data
+        url       = "#{@api_url}#{route}"
+        @response = RestClient.post url, parameter, request_data
 
-         JSON.parse @response.to_str
+        JSON.parse @response.to_str
       end
 
       def login(username, password)
+        logout if @session
 
-        if @session
-          logout
-        end
+        fail "Still logged in as '#{session[:name]}'" if @session
 
-        fail "Can't login while still logged in as '#{session[:name]}'" if @session
-
-        login_result = api_post( '/user/login', { name: username, password: password } )
-
-        fail "User '#{username}' is banned." if login_result['ban']
-
-        fail "Login for user '#{username}' failed." if !login_result['success']
-
-        if !@response.cookies || @response.cookies.empty?
-          fail "Can't extract cookies after login from request."
-        end
-
-        @cookies  = @response.cookies
-
-        cookies_to_session
+        login_request(username, password)
+        login_cookies
       end
 
       def logout
+        return unless @session
 
-        return if !@session
+        parameter = {
+          id: @session[:id],
+          _nonce: @session[:nonce]
+        }
 
-        logout_result = api_post( '/user/logout', { id: @session[:id], _nonce: @session[:nonce] } )
+        logout_result = api_post('/user/logout', parameter)
 
         # TODO: Improve error handling
-        return if !logout_result['success']
+        return unless logout_result['success']
 
         @session = nil
       end
 
       private
 
-      def cookies_to_session
-        # TODO: Move to session?
-        session_cookie = JSON.parse URI.unescape( @cookies['me'] )
-
+      def cookies_to_session(session_cookie)
         @session = {
           id:    session_cookie['id'],
           nonce: session_cookie['id'][0..15],
@@ -87,15 +66,34 @@ class Pr0gramm
           pp:    session_cookie['pp'], # TODO: ?
         }
 
-        @session[:admin] = session_cookie['a'] == 1 ? true : false;
+        @session[:admin] = session_cookie['a'] == 1 ? true : false
 
-        flags = session_cookie['flags']
-        if flags
-          flags = Pr0gramm::Flags.array( flags )
-        end
-        @session[:flags] = flags
+        return unless session_cookie['flags']
+
+        @session[:flags] = Pr0gramm::Flags.array(session_cookie['flags'])
       end
 
+      def login_request(username, password)
+        parameter = {
+          name:     username,
+          password: password
+        }
+
+        login_result = api_post('/user/login', parameter)
+
+        fail "User '#{username}' is banned." if login_result['ban']
+
+        fail "Login as '#{username}' failed." unless login_result['success']
+      end
+
+      def login_cookies
+        fail 'Missing login cookies.' unless @response.cookies
+        fail 'Empty login cookies.' if @response.cookies.empty?
+
+        @cookies = @response.cookies
+
+        cookies_to_session(JSON.parse URI.unescape(@cookies['me']))
+      end
     end
   end
 end
